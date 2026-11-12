@@ -6,7 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from src.utils.request_id import new_request_id
 
 
-class RequestIdMiddleware(BaseHTTPMiddleware):
+class RequestIDMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
         request_id = new_request_id()

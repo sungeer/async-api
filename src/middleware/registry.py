@@ -3,11 +3,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 
 from src import settings
-from src.middleware import tracing
+from src.middleware import request_id
 from src.middleware import auth_backend
 
 middleware = [
-    Middleware(tracing.RequestIdMiddleware),  # 最外层 最先执行
+    Middleware(request_id.RequestIDMiddleware),  # 最外层 最先执行
     Middleware(
         CORSMiddleware,
         allow_origins=settings.ORIGINS,  # allow_origins=['*']  # 允许所有来源

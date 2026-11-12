@@ -49,10 +49,10 @@ async def create_user(username: str, display_name: str | None, email: str) -> in
     return user_id
 
 
-async def update_display_name(user_id: int, new_display_name: str) -> int:
+async def update_display_name(user_id: int, display_name: str) -> int:
     def run_sync():
         with db.connect() as conn:
-            rowcount = repository.update_display_name(conn, new_display_name, user_id)
+            rowcount = repository.update_display_name(conn, user_id, display_name)
             conn.commit()
             return rowcount
 

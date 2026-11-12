@@ -6,7 +6,7 @@ from src.utils import rand
 
 
 def create_task() -> str:
-    task_id = rand.gen_token()
+    task_id = rand.hex_id()
     return task_id
 
 

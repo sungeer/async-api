@@ -60,7 +60,7 @@ def insert_user(conn, username: str, display_name: str | None, email: str) -> in
     return result.lastrowid
 
 
-def update_display_name(conn, new_display_name: str, user_id: int) -> int:
+def update_display_name(conn, user_id: int, display_name: str) -> int:
     sql = text('''
         UPDATE
             users
@@ -71,7 +71,7 @@ def update_display_name(conn, new_display_name: str, user_id: int) -> int:
     ''')
 
     params = {
-        'display_name': new_display_name,
+        'display_name': display_name,
         'id': user_id
     }
 

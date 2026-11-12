@@ -4,7 +4,7 @@ import datetime
 import decimal
 
 
-class JsonExtendEncoder(json.JSONEncoder):
+class JSONExtendEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
@@ -27,4 +27,4 @@ def from_json(data):
 
 # dict to json
 def to_json(data):
-    return json.dumps(data, cls=JsonExtendEncoder, ensure_ascii=False)
+    return json.dumps(data, cls=JSONExtendEncoder, ensure_ascii=False)

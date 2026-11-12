@@ -1,17 +1,16 @@
 from contextlib import asynccontextmanager
 
 from src.core.logger import setup_logger
-from src.core.db_registry import db
-from src.core.http_client import httpx
+from src.core.db import db
+from src.core.http_client import http
 from src.core.executor import executor
-from src.core.background import background
 
 
 @asynccontextmanager
 async def lifespan(app):
     setup_logger()
 
-    httpx.init()
+    http.init()
 
     db.init()
 
@@ -19,9 +18,7 @@ async def lifespan(app):
 
     yield
 
-    await background.shutdown()
-
-    await httpx.aclose()
+    await http.aclose()
 
     db.dispose()
 

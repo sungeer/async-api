@@ -44,4 +44,4 @@ class _AsyncClientHolder:
             self._client = None
 
 
-httpx = _AsyncClientHolder()
+http = _AsyncClientHolder()

@@ -3,10 +3,10 @@ import time
 from loguru import logger
 
 from src import settings
-from src.core.http_client import httpx, HTTPError
+from src.core.http_client import http, HTTPError
 from src.domains.chat.errors import UpstreamError
-from src.domains.chat.prompts import structured_system_prompt
-from src.domains.chat import json_schema
+from src.domains.chat.prompts import system_prompt
+from src.domains.chat import schema
 from src.utils import serial
 
 
@@ -32,7 +32,7 @@ async def complete() -> str:
         'thinking': {'type': 'disabled'}
     }
 
-    client = httpx.get_client()
+    client = http.get_client()
     start = time.perf_counter()
     try:
         response = await client.post(url, headers=headers, json=payload)
@@ -128,7 +128,7 @@ async def structured():
     payload = {
         'model': settings.LLM_MODEL,
         'messages': [
-            {'role': 'system', 'content': structured_system_prompt},
+            {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': user_msg}
         ],
         'max_tokens': 1024,  # 防止 JSON 字符串被中途截断
@@ -138,7 +138,7 @@ async def structured():
         'response_format': {'type': 'json_object'},
     }
 
-    client = httpx.get_client()
+    client = http.get_client()
     try:
         response = await client.post(url, headers=headers, json=payload)
         response.raise_for_status()
@@ -216,6 +216,6 @@ async def structured():
         logger.exception('json decode error, content={}', content)
         raise UpstreamError('json decode error')
 
-    structured_schema = json_schema.structured_schema
-    json_schema.validate_struct(parsed, structured_schema)
+    structured_schema = schema.structured_schema
+    schema.validate_struct(parsed, structured_schema)
     return parsed

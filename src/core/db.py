@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from src import settings
 
 
-class _EngineHolder:
+class _Engine:
 
     def __init__(self):
         self._engine = None
@@ -37,4 +37,4 @@ class _EngineHolder:
             self._engine.dispose()
 
 
-db = _EngineHolder()
+db = _Engine()

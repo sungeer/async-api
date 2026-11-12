@@ -2,7 +2,7 @@ from sqlalchemy.exc import IntegrityError
 
 from src.utils.exceptions import BusinessError
 from src.core.executor import executor
-from src.core.db_registry import db
+from src.core.db import db
 from src.domains.users import repository
 from src.utils.concurrency import run_in_threadpool
 

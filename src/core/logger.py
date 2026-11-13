@@ -4,29 +4,12 @@ from loguru import logger
 
 from src import settings
 
-_level_abbr = {
-    'TRACE': 'TRC',
-    'DEBUG': 'DBG',
-    'INFO': 'INF',
-    'SUCCESS': 'SUC',
-    'WARNING': 'WRN',
-    'ERROR': 'ERR',
-    'CRITICAL': 'CRT'
-}
-
-
-def _patch_record(record):
-    record['extra'].setdefault('request_id', '-')
-    record['level'].name = _level_abbr.get(record['level'].name, record['level'].name)
-
 
 def setup_logger():
     logger.remove()
 
-    logger.configure(patcher=_patch_record)
-
     fmt = (
-        '{time:HH:mm:ss.SSS} | {extra[request_id]} | {level} | '
+        '{time:HH:mm:ss.SSS} | {level} | '
         '{message} ({name}:{line})'
     )
 

@@ -33,16 +33,11 @@ async def param_error(request, exc):
 
 # 上游依赖不可用 503
 async def upstream_unavailable(request, exc):
-    request_id = getattr(request.state, 'request_id', '-')
-
-    with logger.contextualize(request_id=request_id):
-        logger.exception('upstream unavailable, path={}', request.url.path)
-
-    return fail(
-        exc.msg,
-        http_status=503,
-        headers={'X-Request-ID': request_id}
+    logger.exception(
+        'upstream unavailable, path={}',
+        request.url.path
     )
+    return fail(exc.msg, http_status=503)
 
 
 # 未登录
@@ -76,16 +71,11 @@ async def server_error(request, exc):
     数据库崩了 依赖超时 等 系统级异常
     监控在这里感知
     """
-    request_id = getattr(request.state, 'request_id', '-')
-
-    with logger.contextualize(request_id=request_id):
-        logger.exception('unhandled server error path={}', request.url.path)
-
-    return fail(
-        'internal server error',
-        http_status=500,
-        headers={'X-Request-ID': request_id}
+    logger.exception(
+        'unhandled server error path={}',
+        request.url.path
     )
+    return fail('internal server error', http_status=500)
 
 
 exception_handlers = {

@@ -1,6 +1,3 @@
-import time
-
-from loguru import logger
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.utils.request_id import new_request_id
@@ -13,25 +10,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 
         request.state.request_id = request_id
 
-        start = time.perf_counter()
-
-        with logger.contextualize(request_id=request_id):
-            status = 0  # 未产生状态码: 请求被取消
-            try:
-                response = await call_next(request)
-                status = response.status_code
-            except Exception:
-                status = 500  # 未处理异常
-                raise
-            finally:
-                elapsed_ms = round((time.perf_counter() - start) * 1000)
-                logger.info(
-                    'done method={} path={} status={} duration_ms={}',
-                    request.method,
-                    request.url.path,
-                    status,
-                    elapsed_ms,
-                )
+        response = await call_next(request)
 
         response.headers['X-Request-ID'] = request_id
         return response

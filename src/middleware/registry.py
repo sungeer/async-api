@@ -1,10 +1,9 @@
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware.authentication import AuthenticationMiddleware
 
 from src import settings
 from src.middleware import request_id
-from src.middleware import auth_backend
+from src.middleware import auth
 
 middleware = [
     Middleware(request_id.RequestIDMiddleware),  # 最外层 最先执行
@@ -16,9 +15,5 @@ middleware = [
         allow_headers=['*'],  # 允许所有头部
         expose_headers=['X-Request-ID'],  # 跨源时允许前端 JS 读取该响应头
     ),
-    Middleware(
-        AuthenticationMiddleware,
-        backend=auth_backend.JWTAuthBackend(),
-        on_error=auth_backend.on_auth_error
-    ),
+    Middleware(auth.AuthMiddleware),
 ]

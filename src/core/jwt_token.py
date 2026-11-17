@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
-from starlette.authentication import AuthenticationError
 
 from src import settings
+from src.utils.exceptions import UnauthorizedError
 
 
 # 生成 JWT Access Token
@@ -36,14 +36,14 @@ def _decode_token(token: str):
             algorithms=[settings.JWT_ALGORITHM],
         )
     except ExpiredSignatureError:
-        raise AuthenticationError('JWT token expired')
+        raise UnauthorizedError('JWT token expired')
     except InvalidTokenError:
-        raise AuthenticationError('JWT token invalid or malformed')
+        raise UnauthorizedError('JWT token invalid or malformed')
 
 
 # 验证 Access Token 并返回 payload
 def verify_access_token(token: str):
     payload = _decode_token(token)
     if payload.get('type') != 'access':
-        raise AuthenticationError('JWT token type mismatch')
+        raise UnauthorizedError('JWT token type mismatch')
     return payload

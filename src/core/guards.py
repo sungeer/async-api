@@ -7,8 +7,12 @@ from src.utils.exceptions import UnauthorizedError, ForbiddenError
 def login_required(func):
     @functools.wraps(func)
     async def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            raise UnauthorizedError()
+        user = request.state.user
+        if user is None:
+            auth_error = request.state.auth_error
+            if not auth_error:
+                auth_error = 'please login first'
+            raise UnauthorizedError(auth_error)
         return await func(request, *args, **kwargs)
 
     return wrapper
@@ -19,9 +23,13 @@ def permission_required(scope):
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(request, *args, **kwargs):
-            if not request.user.is_authenticated:
-                raise UnauthorizedError()
-            if scope not in request.auth.scopes:
+            user = request.state.user
+            if user is None:
+                auth_error = request.state.auth_error
+                if not auth_error:
+                    auth_error = 'please login first'
+                raise UnauthorizedError(auth_error)
+            if scope not in user['roles']:
                 raise ForbiddenError(f'permission denied: requires scope [{scope}]')
             return await func(request, *args, **kwargs)
 

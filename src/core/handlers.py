@@ -40,8 +40,12 @@ async def upstream_unavailable(request, exc):
     return fail(exc.msg, http_status=503)
 
 
-# 未登录
+# 未登录 401
 async def unauthorized_error(request, exc):
+    logger.warning(
+        'unauthorized, method={}, path={}, msg={}',
+        request.method, request.url.path, exc.msg,
+    )
     return fail(exc.msg, http_status=401)
 
 

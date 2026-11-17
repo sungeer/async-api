@@ -8,10 +8,7 @@ from src import settings
 def setup_logger():
     logger.remove()
 
-    fmt = (
-        '{time:HH:mm:ss.SSS} | {level} | '
-        '{message} ({name}:{line})'
-    )
+    fmt = '{time:HH:mm:ss.SSS} | {level} | {message} ({name}:{line})'
 
     env = settings.ENVIRONMENT
 

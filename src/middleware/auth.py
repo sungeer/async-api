@@ -12,18 +12,13 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         auth = request.headers.get('Authorization')
         if auth:
-            await self._authenticate(request, auth)
+            parts = auth.split()
+            if len(parts) != 2 or parts[0].lower() != 'bearer':
+                request.state.auth_error = 'invalid authorization header'
+            else:
+                try:
+                    request.state.user = jwt_token.verify_access_token(parts[1])
+                except UnauthorizedError as exc:
+                    request.state.auth_error = exc.msg
 
         return await call_next(request)
-
-    @staticmethod
-    async def _authenticate(request, auth):
-        parts = auth.split()
-        if len(parts) != 2 or parts[0].lower() != 'bearer':
-            request.state.auth_error = 'invalid authorization header'
-            return
-
-        try:
-            request.state.user = jwt_token.verify_access_token(parts[1])
-        except UnauthorizedError as exc:
-            request.state.auth_error = exc.msg

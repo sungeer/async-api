@@ -19,8 +19,8 @@ class _Engine:
             pool_pre_ping=True,  # 避免拿到失效连接
             connect_args={
                 'connect_timeout': 10,  # 连不上 DB 时 10s 快速失败
-                'read_timeout': 10,  # 读挂死最多等 30s
-                'write_timeout': 10,  # 写挂死最多等 30s
+                'read_timeout': 10,  # 读挂死最多等 10s
+                'write_timeout': 10,  # 写挂死最多等 10s
             },
         )
 

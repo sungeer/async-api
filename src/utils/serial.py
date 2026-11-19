@@ -12,7 +12,7 @@ class JSONExtendEncoder(json.JSONEncoder):
         elif isinstance(obj, datetime.date):
             return obj.strftime('%Y-%m-%d')
         elif isinstance(obj, decimal.Decimal):
-            return float(obj)
+            return str(obj)  # float(obj)
         elif isinstance(obj, bytes):
             return obj.decode('utf-8')
         elif isinstance(obj, uuid.UUID):

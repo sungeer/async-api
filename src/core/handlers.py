@@ -1,5 +1,6 @@
 from loguru import logger
 from starlette.requests import ClientDisconnect
+from starlette.exceptions import HTTPException
 
 from src.utils.exceptions import (
     BusinessError,
@@ -22,7 +23,7 @@ async def business_error(request, exc):
     return fail(exc.msg, http_status=200)
 
 
-# 入参错误 400
+# 400 入参错误
 async def param_error(request, exc):
     logger.warning(
         'param error, method={}, path={}, msg={}',
@@ -31,7 +32,7 @@ async def param_error(request, exc):
     return fail(exc.msg, http_status=400)
 
 
-# 上游依赖不可用 503
+# 503 上游依赖不可用
 async def upstream_unavailable(request, exc):
     logger.exception(
         'upstream unavailable, path={}',
@@ -40,7 +41,7 @@ async def upstream_unavailable(request, exc):
     return fail(exc.msg, http_status=503)
 
 
-# 未登录 401
+# 401 未登录
 async def unauthorized_error(request, exc):
     logger.warning(
         'unauthorized, method={}, path={}, msg={}',
@@ -49,17 +50,17 @@ async def unauthorized_error(request, exc):
     return fail(exc.msg, http_status=401)
 
 
-# 无权限 403
+# 403 无权限
 async def forbidden_error(request, exc):
     return fail(exc.msg, http_status=403)
 
 
-# 路由匹配不到
+# 404 路由匹配不到
 async def not_found(request, exc):
     return fail(exc.detail, http_status=404)
 
 
-# 方法不对
+# 405 方法不对
 async def method_not_allowed(request, exc):
     return fail(exc.detail, http_status=405)
 
@@ -67,6 +68,15 @@ async def method_not_allowed(request, exc):
 # 客户端中途断开
 async def client_disconnect(request, exc):
     return fail('client closed request', http_status=499)
+
+
+# 所有未显式注册的 400 413 416 等
+async def http_error(request, exc):
+   logger.warning(
+       'http error, method={}, path={}, status={}, msg={}',
+       request.method, request.url.path, exc.status_code, exc.detail,
+   )
+   return fail(exc.detail, http_status=exc.status_code)
 
 
 # 内部错误 500
@@ -83,13 +93,14 @@ async def server_error(request, exc):
 
 
 exception_handlers = {
-    404: not_found,  # 整数键 由 Starlette 内部触发
-    405: method_not_allowed,  # 整数键 方法不对
-    BusinessError: business_error,  # 类键
-    ParamError: param_error,
-    UpstreamUnavailableError: upstream_unavailable,
-    UnauthorizedError: unauthorized_error,
-    ForbiddenError: forbidden_error,
-    ClientDisconnect: client_disconnect,
-    Exception: server_error,  # 处理所有没被预料到的 Python 异常
+    HTTPException: http_error,  # 兜住 400/413/416 等所有未显式注册的
+    404: not_found,
+    405: method_not_allowed,
+    BusinessError: business_error,  # 200
+    ParamError: param_error,  # 400
+    UpstreamUnavailableError: upstream_unavailable,  # 503
+    UnauthorizedError: unauthorized_error,  # 401
+    ForbiddenError: forbidden_error,  # 403
+    ClientDisconnect: client_disconnect,  # 499
+    Exception: server_error,
 }

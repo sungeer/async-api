@@ -20,17 +20,11 @@ class APIResponse(JSONResponse):
 
 
 def ok(data: Any = None) -> APIResponse:
-    return APIResponse({
-        'success': True,
-        'data': data
-    })
+    return APIResponse({'success': True, 'data': data})
 
 
 def fail(error: str, http_status: int) -> APIResponse:
     return APIResponse(
-        {
-            'success': False,
-            'error': error
-        },
+        {'success': False, 'error': error},
         status_code=http_status
     )

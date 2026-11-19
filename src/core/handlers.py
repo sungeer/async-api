@@ -86,7 +86,7 @@ async def server_error(request, exc):
     监控在这里感知
     """
     logger.exception(
-        'unhandled server error path={}',
+        'unhandled server error, path={}',
         request.url.path
     )
     return fail('internal server error', http_status=500)
